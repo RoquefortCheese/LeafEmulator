@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://civ7w1oa408dh"]
+
+[ext_resource type="Script" uid="uid://bjhmqfaueptlt" path="res://world.gd" id="1_f3sb7"]
+[ext_resource type="Shader" uid="uid://cx8ouimkegxpo" path="res://chess.gdshader" id="2_fj7yv"]
+[ext_resource type="Shader" uid="uid://r1n81ndjdgbg" path="res://water.gdshader" id="3_tlwt5"]
+[ext_resource type="PackedScene" uid="uid://dca8g0ncc401y" path="res://player.tscn" id="4_aqk2v"]
+[ext_resource type="ArrayMesh" uid="uid://bd8n5w0hbhf1l" path="res://leaf.glb" id="4_dwbse"]
+[ext_resource type="AudioStream" uid="uid://b65o3qxsqy4j8" path="res://crunch.mp3" id="6_dwbse"]
+[ext_resource type="Shader" uid="uid://dkmyedkatl1t5" path="res://light.gdshader" id="6_gbfbk"]
+[ext_resource type="FontFile" uid="uid://bpkhaa6hto531" path="res://RobotoMono-Light.ttf" id="6_pkg7o"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tlwt5"]
+render_priority = 0
+shader = ExtResource("2_fj7yv")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fj7yv"]
+frequency = 0.006
+fractal_octaves = 4
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4flbx"]
+frequency = 0.015
+fractal_octaves = 3
+fractal_lacunarity = 1.8
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk2bu"]
+sky_top_color = Color(0, 0.5019608, 1, 1)
+sky_horizon_color = Color(0.5019608, 0.7529412, 1, 1)
+sky_curve = 1.0
+ground_bottom_color = Color(0.627451, 0.8784314, 1, 1)
+ground_horizon_color = Color(0.5019608, 0.7529412, 1, 1)
+ground_curve = 1.0
+sun_curve = 0.125
+
+[sub_resource type="Sky" id="Sky_guk6m"]
+sky_material = SubResource("ProceduralSkyMaterial_xk2bu")
+
+[sub_resource type="Environment" id="Environment_bae8c"]
+background_mode = 2
+sky = SubResource("Sky_guk6m")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.6
+tonemap_agx_white = 8.0
+tonemap_agx_contrast = 2.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_tlwt5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_guk6m"]
+render_priority = 0
+shader = ExtResource("3_tlwt5")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bae8c"]
+material = SubResource("ShaderMaterial_guk6m")
+
+[sub_resource type="MultiMesh" id="MultiMesh_036b0"]
+transform_format = 1
+use_colors = true
+mesh = ExtResource("4_dwbse")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bae8c"]
+shader = ExtResource("6_gbfbk")
+
+[sub_resource type="LabelSettings" id="LabelSettings_bae8c"]
+line_spacing = -10.0
+font = ExtResource("6_pkg7o")
+font_size = 50
+outline_size = 15
+outline_color = Color(0.7529412, 0.7529412, 0.7529412, 1)
+
+[node name="World" type="Node" unique_id=512716964]
+script = ExtResource("1_f3sb7")
+boardmat = SubResource("ShaderMaterial_tlwt5")
+noise = SubResource("FastNoiseLite_fj7yv")
+leafnoise = SubResource("FastNoiseLite_4flbx")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=832456038]
+environment = SubResource("Environment_bae8c")
+
+[node name="Suns" type="Node3D" parent="." unique_id=128182405]
+
+[node name="SunOne" type="DirectionalLight3D" parent="Suns" unique_id=1559854307]
+transform = Transform3D(0.8660254, -0.35355335, 0.35355338, 0, 0.70710677, 0.7071067, -0.5, -0.61237234, 0.6123724, 0, 0, 0)
+light_energy = 0.4
+sky_mode = 1
+
+[node name="SunTwo" type="DirectionalLight3D" parent="Suns" unique_id=1937930885]
+transform = Transform3D(-0.7071067, 0.3535534, 0.61237234, 0, 0.8660254, -0.5, -0.7071067, -0.3535534, -0.61237234, 0, 0, 0)
+light_energy = 0.2
+sky_mode = 1
+
+[node name="VisualSun" type="DirectionalLight3D" parent="Suns" unique_id=166639016]
+transform = Transform3D(0.8660254, -0.3535534, 0.3535534, 0, 0.7071068, 0.7071068, -0.5, -0.61237246, 0.61237246, 0, 0, 0)
+sky_mode = 2
+
+[node name="Board" type="MeshInstance3D" parent="." unique_id=632297738]
+mesh = SubResource("PlaneMesh_tlwt5")
+
+[node name="Water" type="MeshInstance3D" parent="." unique_id=1580266386]
+mesh = SubResource("PlaneMesh_bae8c")
+
+[node name="OuterBounds" type="StaticBody3D" parent="." unique_id=862566702]
+
+[node name="Leafs" type="Node3D" parent="." unique_id=1550841330]
+
+[node name="MultiLeaf" type="MultiMeshInstance3D" parent="." unique_id=52237323]
+multimesh = SubResource("MultiMesh_036b0")
+
+[node name="Player" parent="." unique_id=49195551 instance=ExtResource("4_aqk2v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64, 0)
+
+[node name="LightRect" type="ColorRect" parent="." unique_id=1910246365]
+material = SubResource("ShaderMaterial_bae8c")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SwimmingRect" type="ColorRect" parent="." unique_id=337765969]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 1, 1)
+
+[node name="StatLabel" type="Label" parent="." unique_id=1171444421]
+offset_left = 80.0
+offset_top = 60.0
+offset_right = 380.0
+offset_bottom = 126.0
+label_settings = SubResource("LabelSettings_bae8c")
+
+[node name="EndLabel" type="Label" parent="." unique_id=1613567529]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -330.0
+offset_top = -310.0
+offset_right = -80.0
+offset_bottom = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+label_settings = SubResource("LabelSettings_bae8c")
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="LeafTouchAudio" type="AudioStreamPlayer" parent="." unique_id=1972979510]
+stream = ExtResource("6_dwbse")
+volume_db = -8.0
+pitch_scale = 1.2
+max_polyphony = 3
